@@ -9,7 +9,7 @@ static int girar = 0;
 static int inicio;
 static int girar2 = 0;
 static int inicio2;
-double x=0, y=0, bx=0.0,by=0.4,bz=0,s=0;
+double x=0, y=0, bx=0.0,by=0.4,bz=0,s=0,jx=0;
 double fy=0;
 double gravidade=-0.0005, vx=0.0001, vz = 0.0002;
 
@@ -58,8 +58,14 @@ glutPostRedisplay();
 }
 
 void specialKeys( int key, int xi, int yi ) {
-if (key == GLUT_KEY_RIGHT) y += 5;
-else if (key == GLUT_KEY_LEFT) y -= 5;
+if (key == GLUT_KEY_RIGHT){
+        if(jx<= 1.3)
+            jx += 0.05;
+}
+else if (key == GLUT_KEY_LEFT){
+    if(jx>= -1.3)
+        jx -= 0.05;
+}
 else if (key == GLUT_KEY_UP ) x += 5;
 else if (key == GLUT_KEY_DOWN) x -= 5;
 glutPostRedisplay();
@@ -79,7 +85,7 @@ glViewport(0, 0, w, h);
 glMatrixMode(GL_PROJECTION);
 glLoadIdentity();
 gluPerspective(40.0, (GLfloat) w / (GLfloat) h, 1.0, 20.0);
-glMatrixMode(GL_MODELVIEW);
+//glMatrixMode(GL_MODELVIEW);
 }
 
 void campo(){
@@ -131,7 +137,11 @@ void bola(){
 
 void player(){
     glScalef(1.0,1.0,1.0);
-    glutSolidTetrahedron();
+    glTranslatef(jx, 0.0, 0.0);
+    glutSolidCube(0.4);
+}
+
+void oponente(){
 }
 
 void display(void)
@@ -155,8 +165,14 @@ glEnable(GL_LIGHTING);
 glPopMatrix();
 glRotatef(20,1.0,0.0,0.0);
 campo();
-player();
 bola();
+glPopMatrix();
+
+glMatrixMode(GL_MODELVIEW);
+glPushMatrix();
+glRotated(20, 1.0, 0.0, 0.0);
+glTranslatef(0.0, -1.4, -3.0);
+player();
 glPopMatrix();
 glutSwapBuffers();
 }
