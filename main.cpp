@@ -22,12 +22,12 @@ inicio2 = y;
 }
 
 void colisao_bola(){
-    if(bz>=1.3 && bz<=1.4){
+    if(bz>=1.3 && bz<=1.5){
         if(bx<=(jx+0.2) && bx>=(jx-0.2)){
             vz = vz*-1;
             vx += inercia/50000;
         }
-    }else if(bz<=-1.3 && bz>=-1.4){
+    }else if(bz<=-1.3 && bz>=-1.5){
         if(bx<=(ax+0.2) && bx>=(ax-0.2)){
             vz = vz*-1;
         }
@@ -40,18 +40,18 @@ s += 0.0001;
 colisao_bola();
 if(by<=0.025)
     fy = (fy*-1);
-if(bz<=-1.5){
+if(bz<=-1.7){
     bz = 0.5;
     vx=0.001;
     ia +=0.00005;
     pontosP++;
 }
-if(bz>=1.5){
+if(bz>=1.7){
     bz = -0.5;
     vx=0.001;
     pontosA++;
 }
-if(bx<=-1.5 || bx >= 1.5)
+if(bx<=-1.4 || bx >= 1.4)
     vx = vx*-1;
 fy += gravidade/10000;
 by += fy;
@@ -89,21 +89,21 @@ glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
 glPopMatrix();
 }
 
+void fim(char *texto){
+char *p;
+glPushMatrix();
+glTranslatef(500, 500, 0);
+for (p = texto; *p; p++)
+glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+glPopMatrix();
+}
+
 void visivel(int vis)
 {
 if (vis == GLUT_VISIBLE)
 glutIdleFunc(tempoOcioso);
 else
 glutIdleFunc(NULL);
-}
-
-void movimento(int x, int y)
-{
-girar = (girar + (x - inicio)) % 360;
-inicio = x;
-girar2 = (girar2 + (y - inicio2)) % 360;
-inicio2 = y;
-glutPostRedisplay();
 }
 
 void specialKeys( int key, int xi, int yi ) {
@@ -239,11 +239,22 @@ glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-    glRotatef(4, 0.0, 0.0, 1.0);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
-    glColor3f(1,1,1);
+    if(pontosA > 1)
+        glColor3f(1,0,0);
+    else if (pontosP > 1)
+        glColor3f(0,0,1);
+    if(pontosA >= 3 || pontosP >= 3){
+        vx = 0;
+        vz = 0;
+        if(pontosA >= 3)
+            fim("Voce perdeu!");
+        else
+            fim("Voce Ganhou!");
+    }else{
     output();
+    }
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -262,7 +273,6 @@ glutCreateWindow(argv[0]);
 focoLuz();
 glutSpecialFunc(specialKeys);
 glutMouseFunc(moverLuz);
-glutMotionFunc(movimento);
 glutReshapeFunc(estrutura);
 glutDisplayFunc(display);
 glutVisibilityFunc(visivel);
